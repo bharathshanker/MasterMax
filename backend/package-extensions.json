@@ -1,0 +1,8 @@
+{
+  "speech": {
+    "version": "4.4.0"
+  },
+  "vertexai": {
+    "version": "0.1.0"
+  }
+}
