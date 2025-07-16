@@ -14,6 +14,7 @@ import CustomerAudio from '../models/CustomerAudio.js'; // Corrected path
 // import CustomerCall from './models/CustomerCall.js'; // New model for admin-managed scenarios
 
 import authRoutes from './routes/auth.js';
+import userRoutes from './routes/user.js';
 
 // Setup
 dotenv.config();
@@ -316,21 +317,21 @@ app.get('/api/rubric-list', async (req, res) => {
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
 // --- API: Get user profile (single-user demo mode) ---
-app.get('/api/user-profile', async (req, res) => {
-  let userProfile = await UserProfile.findOne(); // Just get the first user profile
-  if (!userProfile) {
-    userProfile = new UserProfile({ name: 'New User', userId: 'single-user' });
-    await userProfile.save();
-  }
-  res.json(userProfile);
-});
+// app.get('/api/user-profile', async (req, res) => {
+//   let userProfile = await UserProfile.findOne(); // Just get the first user profile
+//   if (!userProfile) {
+//     userProfile = new UserProfile({ name: 'New User', userId: 'single-user' });
+//     await userProfile.save();
+//   }
+//   res.json(userProfile);
+// });
 
 // --- API: Update user profile (single-user demo mode) ---
-app.post('/api/user-profile', async (req, res) => {
-  const updates = req.body;
-  let userProfile = await UserProfile.findOneAndUpdate({}, { ...updates, userId: 'single-user' }, { new: true, upsert: true });
-  res.json(userProfile);
-});
+// app.post('/api/user-profile', async (req, res) => {
+//   const updates = req.body;
+//   let userProfile = await UserProfile.findOneAndUpdate({}, { ...updates, userId: 'single-user' }, { new: true, upsert: true });
+//   res.json(userProfile);
+// });
 
 // --- Helper: Update user profile stats after pitch ---
 async function updateUserProfileStats(pitch, product) {
@@ -642,6 +643,8 @@ app.post('/api/admin/clear-all-recordings', async (req, res) => {
 
 
 app.use('/api/auth', authRoutes);
+
+app.use('/api', userRoutes);
 
 // Start server
 const PORT = process.env.PORT || 5002;

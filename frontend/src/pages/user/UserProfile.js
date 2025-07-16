@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { getUserProfile, updateUserProfile } from './api';
 import GamifiedProfileCard from './GamifiedProfileCard';
+import { AuthContext } from '../../context/AuthContext';
 
 const DEMO_USER_ID = 'demo-user';
 
@@ -26,12 +27,18 @@ export default function UserProfile() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+  const { auth } = useContext(AuthContext);
 
   useEffect(() => {
     async function fetchProfile() {
       setLoading(true);
       try {
-        const data = await getUserProfile();
+        // Get token from context (fallback to localStorage for migration)
+        const token = auth?.token || (typeof localStorage !== 'undefined' ? JSON.parse(localStorage.getItem('auth'))?.token : null);
+        console.log("Token:", token);
+        if (!token) throw new Error('No auth token found');
+        const data = await getUserProfile(token);
+        console.log("Profile data:", data);
         setProfile(data);
         setEditName(data.name || '');
         setEditCity(data.city || '');
@@ -41,12 +48,14 @@ export default function UserProfile() {
       setLoading(false);
     }
     fetchProfile();
-  }, []);
+  }, [auth]);
 
   const handleSave = async () => {
     setSaving(true);
     try {
-      const updated = await updateUserProfile({ name: editName, city: editCity });
+      const token = auth?.token || (typeof localStorage !== 'undefined' ? JSON.parse(localStorage.getItem('auth'))?.token : null);
+      if (!token) throw new Error('No auth token found');
+      const updated = await updateUserProfile(token, { name: editName, city: editCity });
       setProfile(updated);
       setEditing(false);
     } catch (e) {
