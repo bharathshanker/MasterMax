@@ -27,7 +27,7 @@ export default function UserProfile() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
-  const { auth } = useContext(AuthContext);
+  const { auth, setAuth } = useContext(AuthContext);
 
   useEffect(() => {
     async function fetchProfile() {
@@ -64,12 +64,21 @@ export default function UserProfile() {
     setSaving(false);
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('auth');
+    setAuth(null);
+    window.location.href = '/login';
+  };
+
   if (loading) return <div style={{ textAlign: 'center', margin: 40 }}>Loading profile...</div>;
 
   return (
-    <GamifiedProfileCard profile={{
-      ...profile,
-      level: 7, // TODO: use actual level from backend if available
-    }} onEdit={() => setEditing(true)} />
+    <div>
+      <button onClick={handleLogout} style={{ float: 'right', margin: '16px', padding: '10px 22px', borderRadius: '8px', background: '#e44210', color: '#fff', fontWeight: 600, border: 'none', cursor: 'pointer' }}>Logout</button>
+      <GamifiedProfileCard profile={{
+        ...profile,
+        level: 7, // TODO: use actual level from backend if available
+      }} onEdit={() => setEditing(true)} />
+    </div>
   );
 }

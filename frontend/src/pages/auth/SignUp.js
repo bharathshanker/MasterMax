@@ -5,6 +5,7 @@ import { AuthContext } from '../../context/AuthContext';
 import './auth.css';
 
 const SignUp = () => {
+  const [uname, setUname] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('user'); // Default to user
@@ -13,9 +14,9 @@ const SignUp = () => {
 
   const handleSignUp = async (e) => {
     e.preventDefault();
-    const res = await fetch('/api/signup', {
+    const res = await fetch(`${process.env.REACT_APP_API_BASE}/api/auth/signup`, {
       method: 'POST',
-      body: JSON.stringify({ email, password, role }),
+      body: JSON.stringify({name: uname, email, password, role }),
       headers: { 'Content-Type': 'application/json' },
     });
 
@@ -32,6 +33,13 @@ const SignUp = () => {
       <form className="auth-form" onSubmit={handleSignUp}>
         <h2 style={{ marginBottom: 28, color: '#007bff', letterSpacing: '1px', fontWeight: 700 }}>Sign Up</h2>
         <div style={{ marginBottom: 20 }}>
+          <input
+            type="text"
+            placeholder="Name"
+            onChange={e => setUname(e.target.value)}
+            required
+            style={{ width: '100%', padding: '14px', borderRadius: '10px', border: '1px solid #b3c2e0', fontSize: '1.08em', marginBottom: '16px', background: '#f7faff', boxShadow: '0 1px 4px #e0e7ff44' }}
+          />
           <input
             type="email"
             placeholder="Email"
