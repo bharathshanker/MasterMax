@@ -13,6 +13,8 @@ import UserProfile from './user.js';
 import CustomerAudio from '../models/CustomerAudio.js'; // Corrected path
 // import CustomerCall from './models/CustomerCall.js'; // New model for admin-managed scenarios
 
+import authRoutes from './routes/auth.js';
+
 // Setup
 dotenv.config();
 const GEMINI_RESPONSE_LOGGING = process.env.GEMINI_RESPONSE_LOGGING === 'true';
@@ -82,10 +84,11 @@ const memoryStorage = multer.memoryStorage();
 const memoryUpload = multer({ storage: memoryStorage, fileFilter: audioFileFilter });
 
 // MongoDB connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/pitch-expert', {
+mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
-});
+}).then(() => console.log("✅ MongoDB connected"))
+  .catch(err => console.error("❌ MongoDB error:", err, process.env.MONGO_URI));
 
 // Extended Pitch schema
 const pitchSchema = new mongoose.Schema({
@@ -635,6 +638,10 @@ app.post('/api/admin/clear-all-recordings', async (req, res) => {
     res.status(500).json({ message: 'Failed to clear recordings.', error: error.message });
   }
 });
+
+
+
+app.use('/api/auth', authRoutes);
 
 // Start server
 const PORT = process.env.PORT || 5002;
